@@ -59,17 +59,27 @@ await client.select({ key: true })
 
 **Would fix it:** The node knows each attribute's stored type (the `attributeSchema` field exists). A debug flag, or a warning when a predicate's type matches nothing in the attribute schema, would save the guesswork.
 
-## 4. A write from an unfunded wallet fails without saying it is unfunded
+## 4. Very different write failures all surface as "Execution error without revert data"
 
-**Surface:** TypeScript SDK, `createEntity` (wallet client)
+**Surface:** TypeScript SDK, `createEntity` / `executeBatch` (wallet client)
 
-**Expected:** An "insufficient funds" style error, since the account has 0 GLM.
+**Expected:** The top-level error says what went wrong, at least for the common cases: an unfunded wallet, or an RPC that failed.
 
-**Actual:** `EntityMutationError: Transaction failed: Execution error without revert data`.
+**Actual:** Two unrelated failures gave the same `EntityMutationError: Transaction failed: Execution error without revert data`:
 
-**Reproduce:** Generate a new key with `viem/accounts`, do not fund it, then call `walletClient.createEntity({...})` with any valid entity.
+1. **Unfunded wallet.** The real reason is five `.cause` levels down: `out of gas: gas required exceeds: 0`. Even that does not say "balance is 0" or point to the faucet.
+2. **HTTP 502 from the RPC** on `eth_sendRawTransaction`, during our first publish with batches of 25 creates. Only `.cause` shows `Status: 502`. Retrying with batches of 5 worked. We later saw that three of the four 25-entity batches in the "failed" run had landed, so a developer who trusts the message would retry blindly and could duplicate data. Our publisher avoids that by diffing against Arkiv before every write.
 
-**Would fix it:** Check the balance (or catch the node's funds error) inside `sendArkivTransaction` and raise a clear `InsufficientFundsError` that links to the faucet.
+**Reproduce (1):**
+```ts
+const w = createWalletClient({ chain: tiramisu, transport: http(), account: privateKeyToAccount(generatePrivateKey()) })
+await w.createEntity({ attributes: { app: str("test") }, payload: jsonToPayload({ t: 1 }), contentType: "application/json", expires: ExpirationTime.fromMinutes(5) })
+// then walk e.cause until .details === "out of gas: gas required exceeds: 0"
+```
+
+**Reproduce (2):** Not deterministic. We hit it once, with `executeBatch({ creates })` of 25 entities (9 attributes and a small JSON payload each), on 13 October around 19:00 UTC.
+
+**Would fix it:** Use the innermost `details` in the top-level message. Map `gas required exceeds: 0` to a typed `InsufficientFundsError` that links to the faucet, and an HTTP 5xx to a transport error, distinct from an execution error, that says the transaction may still have landed.
 
 ## 5. The live-events docs show only HTTP polling
 

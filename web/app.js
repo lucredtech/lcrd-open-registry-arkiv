@@ -226,25 +226,32 @@ function startLive() {
     $("live-text").textContent = "live updates off"
     return
   }
+  // Tiramisu is shared with every other app, and each query costs quota, so
+  // only react to the publisher's writes and to entities already on the page.
+  // The event's indexed owner makes that check free. Bursts (a publisher run
+  // writes in batches) collapse into one reload.
+  const known = () => new Set([...state.contracts, ...state.protocols, ...state.days, ...state.claims].map((e) => e.key))
   let pending
+  let burst = 0
   client.watchEntityEvents({
-    onEvent: async (event) => {
-      let entity
-      try {
-        entity = await reader.getEntity(event.entityKey)
-      } catch {
-        return
-      }
-      if (value(entity, "app") !== APP) return
+    onEvent: (event) => {
+      if (!sameAddr(event.owner, PUBLISHER) && !known().has(event.entityKey)) return
       state.fresh.add(event.entityKey)
+      burst++
       live.classList.add("flash")
       setTimeout(() => live.classList.remove("flash"), 800)
       clearTimeout(pending)
       pending = setTimeout(async () => {
-        await Promise.all([loadRegistry(), loadActivity(), loadClaims()])
-        renderAll()
-        toast(`${event.type.replace("Entity", "Entity ").toLowerCase()} on Arkiv: ${value(entity, "type")} ${value(entity, "protocol") ?? ""}`)
-      }, 600)
+        const n = burst
+        burst = 0
+        try {
+          await Promise.all([loadRegistry(), loadActivity(), loadClaims()])
+          renderAll()
+          toast(`${n} update${n === 1 ? "" : "s"} from the publisher, live from Arkiv`)
+        } catch {
+          toast("Live update received, but Arkiv is rate-limiting reads right now.")
+        }
+      }, 3000)
     },
     onError: () => {
       live.classList.remove("on")

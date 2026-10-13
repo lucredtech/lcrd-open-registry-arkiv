@@ -112,7 +112,7 @@ There is no server-side ordering, so the app sorts on the client: by `events` fo
 
 ## Live updates
 
-The web app opens `watchEntityEvents` over a WebSocket transport (`wss://rpc.tiramisu.db-chain.testnet.arkiv.network`, no `fromBlock`). On each event it loads the entity and, if `app` matches, refreshes the tables and highlights the new rows.
+The web app opens `watchEntityEvents` over a WebSocket transport (`wss://rpc.tiramisu.db-chain.testnet.arkiv.network`, no `fromBlock`). Tiramisu carries every app's events, and each query costs part of the visitor's anonymous quota, so the page filters on the event's indexed `owner` for free. It reacts only to events whose owner is the publisher, or whose entity is already on the page. A burst of events, such as one publisher run, triggers a single reload, and the new rows are highlighted. A claim from someone else shows up on the next page load; your own claim shows up at once.
 
 ## Writes
 

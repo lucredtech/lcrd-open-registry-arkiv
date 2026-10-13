@@ -14,7 +14,7 @@ import { attr, chunk, fetchAll, publicClient, walletClient } from "./arkiv.js"
 import { APP, LIFETIME_DAYS, PUBLISHER, SCHEMA_VERSION, TYPES, groupOf, stellarExpertContractUrl } from "./schema.js"
 
 const DRY_RUN = process.argv.includes("--dry-run")
-const BATCH_SIZE = 25
+const BATCH_SIZE = Number(process.env.BATCH_SIZE ?? 10)
 
 function loadContracts() {
   const files = ["data/contracts.json", "data/discovered.json"].filter((f) => fs.existsSync(f))
