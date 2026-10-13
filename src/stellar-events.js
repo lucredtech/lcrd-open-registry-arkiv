@@ -70,9 +70,11 @@ export async function protocolDayStats(day, protocolOf, { rpcUrl = DEFAULT_RPC, 
   // RPC nodes keep about 7 days of events. Clamp to the oldest ledger, then
   // refuse below if the day itself starts before it: a partial day would
   // publish numbers that look complete but are not.
+  // Public RPC endpoints are load-balanced and nodes disagree slightly on
+  // their oldest ledger, hence the margin.
   const { oldestLedger } = await rpc(rpcUrl, "getHealth", {})
-  const clamped = startLedger <= oldestLedger
-  if (clamped) startLedger = oldestLedger + 1
+  const clamped = startLedger <= oldestLedger + 1000
+  if (clamped) startLedger = oldestLedger + 1000
 
   const ids = [...protocolOf.keys()]
   const perProtocol = new Map()
@@ -94,7 +96,9 @@ export async function protocolDayStats(day, protocolOf, { rpcUrl = DEFAULT_RPC, 
         ? { filters, pagination: { cursor, limit: PAGE_LIMIT } }
         : { startLedger, endLedger, filters, pagination: { limit: PAGE_LIMIT } }
       const page = await rpc(rpcUrl, "getEvents", params)
-      if (clamped && Number(page.oldestLedgerCloseTime) * 1000 > start) {
+      // Where the clamped scan starts, assuming slow (6 s) ledgers to stay on the safe side.
+      const scanStartsAt = Number(page.oldestLedgerCloseTime) * 1000 + (startLedger - Number(page.oldestLedger)) * 6000
+      if (clamped && scanStartsAt > start) {
         throw new Error(`day ${day} starts before the oldest ledger this RPC keeps (${oldestLedger}); pick a more recent day`)
       }
       for (const ev of page.events) {
