@@ -6,7 +6,9 @@ import { http } from "viem"
 import { privateKeyToAccount } from "viem/accounts"
 import { APP } from "./schema.js"
 
-const transport = () => http(process.env.ARKIV_RPC_URL || undefined)
+// No retries: viem honours Retry-After, which on a rate-limited Arkiv RPC can be
+// 20+ minutes of silent waiting. Every script here is safe to rerun instead.
+const transport = () => http(process.env.ARKIV_RPC_URL || undefined, { timeout: 30_000, retryCount: 0 })
 
 export function publicClient() {
   return createPublicClient({ chain: tiramisu, transport: transport() })

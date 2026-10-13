@@ -8,7 +8,8 @@ import { APP, GROUPS, LIFETIME_DAYS, PUBLISHER, SCHEMA_VERSION, TYPES, dayNumber
 const SECONDS_PER_BLOCK = 2
 const EXPLORER = "https://tiramisu.explorer.arkiv.network"
 
-const reader = createPublicClient({ chain: tiramisu, transport: http() })
+// No retries: on a 429 viem would silently wait out Retry-After (often 20+ minutes).
+const reader = createPublicClient({ chain: tiramisu, transport: http(undefined, { retryCount: 0, timeout: 30_000 }) })
 
 const $ = (id) => document.getElementById(id)
 const short = (s, a = 6, b = 4) => (s && s.length > a + b + 1 ? `${s.slice(0, a)}…${s.slice(-b)}` : s ?? "")
@@ -348,7 +349,13 @@ Promise.all([loadRegistry(), loadActivity(), loadClaims()])
   .then(renderAll)
   .catch((err) => {
     console.error(err)
-    toast("Could not reach Arkiv. Retrying in a moment.")
-    setTimeout(() => location.reload(), 8000)
+    const limited = String(err?.status ?? err?.cause?.status ?? err?.message).includes("429")
+    const msg = limited
+      ? "The public Arkiv RPC has rate-limited this network for a few minutes. Please try again shortly."
+      : "Could not reach Arkiv. Please reload in a moment."
+    for (const id of ["activity", "contracts", "claims"]) {
+      const cols = $(id).querySelectorAll("thead th").length
+      $(id).querySelector("tbody").innerHTML = `<tr><td colspan="${cols}" class="empty">${msg}</td></tr>`
+    }
   })
 startLive()

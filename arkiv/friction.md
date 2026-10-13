@@ -6,7 +6,24 @@ What we hit while building LCRD Open Registry on Arkiv, and what we tested that 
 
 ---
 
-## 1. `exists()` and `ne()` are exported but the node rejects them with an unrelated error
+## 1. A rate-limited query hangs for 20+ minutes with no error
+
+**Surface:** Public RPC (`https://rpc.tiramisu.db-chain.testnet.arkiv.network`) with the TypeScript SDK's default `http()` transport
+
+**Expected:** When the anonymous query budget runs out, the call fails quickly with a message like "get an API key".
+
+**Actual:** After a few dozen dry runs and page loads in one afternoon, our publisher and CLI just stopped: no output, no error, for over five minutes. The node answers `arkiv_query` with `HTTP 429`, `retry-after: 1348`, and the body `{"error":"ANON_COST_LIMITED","message":"unauthenticated query budget exhausted; get an API key at https://hub.arkiv.network for a monthly quota"}`. viem's HTTP transport honours `Retry-After`, so the SDK silently sleeps about 22 minutes before retrying. The helpful message in the body never reaches the developer. The budget is cost-based (`ratelimit: limit=10000`), and it is not obvious beforehand how many queries that allows.
+
+**Reproduce:**
+1. Exhaust the anonymous budget from one IP (repeated paged queries, e.g. `node src/cli.js contracts` in a loop).
+2. Run any `client.select(...).fetch()` with `createPublicClient({ chain: tiramisu, transport: http() })`. It hangs.
+3. `curl -i -X POST -H 'content-type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"arkiv_query","params":["app = \"x\"",{}]}' https://rpc.tiramisu.db-chain.testnet.arkiv.network` shows the 429 and the message.
+
+**Workaround:** `http(url, { retryCount: 0, timeout: 30_000 })` in [`src/arkiv.js`](../src/arkiv.js), so a 429 fails at once with `Status: 429`, and an API key from the Hub for the publisher.
+
+**Would fix it:** Have the SDK's default transport not retry on `ANON_COST_LIMITED` (or cap the `Retry-After` it will wait for), and surface the body's message as a typed error. A sentence on the Tiramisu page about the anonymous budget size would help too, and `Arkiv-Quota-Used-Percent` is already exposed, so the SDK could warn as it approaches 100%.
+
+## 2. `exists()` and `ne()` are exported but the node rejects them with an unrelated error
 
 **Surface:** TypeScript SDK, query builder (`@arkiv-network/sdk/query`)
 
@@ -25,7 +42,7 @@ await client.select({ key: true }).where(q.ne("app", str("x"))).limit(1).fetch()
 
 **Would fix it:** Mark these as `@deprecated` or `@experimental` in the type definitions so editors flag them, or have the SDK throw `QueryError("exists() is not supported by the network yet")` before sending.
 
-## 2. A numeric type mismatch silently returns no results
+## 3. A numeric type mismatch silently returns no results
 
 **Surface:** TypeScript SDK, queries on numeric attributes
 
@@ -42,7 +59,7 @@ await client.select({ key: true })
 
 **Would fix it:** The node knows each attribute's stored type (the `attributeSchema` field exists). A debug flag, or a warning when a predicate's type matches nothing in the attribute schema, would save the guesswork.
 
-## 3. A write from an unfunded wallet fails without saying it is unfunded
+## 4. A write from an unfunded wallet fails without saying it is unfunded
 
 **Surface:** TypeScript SDK, `createEntity` (wallet client)
 
@@ -54,7 +71,7 @@ await client.select({ key: true })
 
 **Would fix it:** Check the balance (or catch the node's funds error) inside `sendArkivTransaction` and raise a clear `InsufficientFundsError` that links to the faucet.
 
-## 4. The live-events docs show only HTTP polling
+## 5. The live-events docs show only HTTP polling
 
 **Surface:** Docs, Live events page
 
@@ -64,7 +81,7 @@ await client.select({ key: true })
 
 **Would fix it:** A three-line WebSocket example on that page, plus a note that `fromBlock` forces polling.
 
-## 5. Docs import `stringToPayload` from two different paths
+## 6. Docs import `stringToPayload` from two different paths
 
 **Surface:** Docs, Installation vs Mutating data pages
 
