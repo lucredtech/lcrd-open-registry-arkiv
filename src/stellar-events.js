@@ -124,8 +124,14 @@ export async function protocolDayStats(day, protocolOf, { rpcUrl = DEFAULT_RPC, 
         }
       }
       log(`  contracts ${g + 1}-${g + group.length}: +${page.events.length} events`)
+      // A short page does not mean the range is done: the RPC scans a limited
+      // window of ledgers per request and returns a cursor to continue from.
+      // Stop only once the cursor (a TOID: ledger in the high 32 bits) or the
+      // last event is past the day.
       const last = page.events.at(-1)
-      if (page.events.length < PAGE_LIMIT || last.ledger > endLedger || Date.parse(last.ledgerClosedAt) >= end) break
+      const cursorLedger = Number(BigInt(page.cursor.split("-")[0]) >> 32n)
+      if (last && Date.parse(last.ledgerClosedAt) >= end) break
+      if (cursorLedger >= endLedger || cursorLedger >= page.latestLedger || page.cursor === cursor) break
       cursor = page.cursor
     }
   }
