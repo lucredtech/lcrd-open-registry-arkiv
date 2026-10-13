@@ -86,7 +86,7 @@ Payload: `{ contractId, protocol, category, note }`.
 
 ## Queries the app runs
 
-All queries are in [`src/cli.js`](../src/cli.js) and [`web/app.js`](../web/app.js). Results are paged with the cursor at 200 per page.
+All queries are in [`src/cli.js`](../src/cli.js) and [`web/app.js`](../web/app.js). Results are paged with the cursor at 200 per page, and every walk is pinned with `.atBlock(head - 2)` so all pages read the same block (see friction item 7).
 
 ```ts
 // Everything the publisher wrote, in one paged query (web app page load; split by type on the client)

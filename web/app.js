@@ -23,10 +23,16 @@ const state = { contracts: [], protocols: [], days: [], claims: [], group: "all"
 // Each Arkiv query costs a visitor's anonymous quota, so the page runs two:
 // everything the publisher wrote for this app (split by type on the client),
 // and every community claim.
+// Pin every page of a walk to one block, a little behind the head. The RPC is
+// load-balanced, and a cursor is bound to the block it was issued at, so an
+// unpinned page-through intermittently fails with "cursor belongs to a
+// different query, block or select" when pages land on nodes at other blocks.
 async function fetchAll(extra, creator) {
+  const block = (await reader.getBlockNumber()) - 2n
   let q = reader
     .select({ key: true, attributes: true, payload: true, contentType: true, creator: true, expiresAt: true })
     .where(eq("app", str(APP)), ...extra)
+    .atBlock(block)
     .limit(200)
   if (creator) q = q.createdBy(creator)
   let page = await q.fetch()

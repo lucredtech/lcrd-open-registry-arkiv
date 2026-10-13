@@ -20,11 +20,19 @@ export function walletClient() {
   return createWalletClient({ chain: tiramisu, transport: transport(), account: privateKeyToAccount(key) })
 }
 
+export const PIN_LAG = 2n
+
+// Pin every page of a walk to one block, a little behind the head. The RPC is
+// load-balanced, and a cursor is bound to the block it was issued at, so an
+// unpinned page-through intermittently fails with "cursor belongs to a
+// different query, block or select" when pages land on nodes at other blocks.
 // Every entity of one type this app's publisher created, across all pages.
 export async function fetchAll(client, type, { creator, extra = [] } = {}) {
+  const block = (await client.getBlockNumber()) - PIN_LAG
   let q = client
     .select({ key: true, attributes: true, payload: true, contentType: true, expiresAt: true, creator: true })
     .where(eq("app", str(APP)), eq("type", str(type)), ...extra)
+    .atBlock(block)
     .limit(200)
   if (creator) q = q.createdBy(creator)
   let page = await q.fetch()

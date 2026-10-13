@@ -105,12 +105,45 @@ await w.createEntity({ attributes: { app: str("test") }, payload: jsonToPayload(
 
 ---
 
+## 7. Paging intermittently fails with "cursor belongs to a different query, block or select"
+
+**Surface:** TypeScript SDK `QueryResult.next()` / `.cursor()`, public RPC
+
+**Expected:** `page.next()` returns the next page of the same query, as the SDK comment promises ("every page of one walk reads the same block — the cursor is bound to it").
+
+**Actual:** The second page fails at random with `QueryError` `kind: "cursor"`, code `-32005`, top-level message `Request exceeds defined limit.` and `data.message` `cursor belongs to a different query, block or select — start a new page-through`. The top-level message points at limits; only `data.message` says what happened. In one run of six walks over our own entities (`limit(50)`), `page.next()` failed 2 times out of 6, and resuming by hand with `.cursor(page.cursor)` failed 1 time out of 6. A broad `$expiresAt > 0` query failed on its second page every time we tried, 5 out of 5. The SDK sends identical requests either way; we read `src/query/queryBuilder.ts` and `engine.ts` to check. Our explanation: the RPC is load-balanced, the first page is answered at one node's head block, and the cursor is bound to that block; the next request can reach a node whose head is elsewhere.
+
+We first listed `page.next()` as "tested and worked". That was wrong: our queries had never returned more than one page.
+
+**Reproduce:**
+```ts
+const q = () => client.select({ key: true }).where(eq("app", str("lcrd-open-registry"))).limit(50)
+for (let i = 0; i < 6; i++) {
+  const p = await q().fetch()
+  await p.next()   // intermittently throws kind "cursor", -32005
+}
+```
+
+**Workaround:** pin the walk to one block slightly behind the head: `.atBlock((await client.getBlockNumber()) - 2n)`. After that change, 8 out of 8 full walks of 5 pages each succeeded. Done in [`src/arkiv.js`](../src/arkiv.js), [`src/snapshot.js`](../src/snapshot.js) and [`web/app.js`](../web/app.js).
+
+**Would fix it:** Have `fetch()` pin `atBlock` to the block of the first page automatically when the caller did not set one, since the cursor is bound to it anyway. Or make the RPC route a cursor to a node that has that block. And put the `data.message` in the top-level error.
+
+## 8. The challenge guide says to range-filter on `$createdAt`, but it is not indexed
+
+**Surface:** Challenge materials (`AGENTS.md` in `Arkiv-Network/global-tour-stop-pre-devcon`) vs the node
+
+**Expected:** `AGENTS.md` says there is no server-side ordering, so "sort on the client, or range-filter on `$createdAt`".
+
+**Actual:** `.where(gt("$createdAt", u64(0n)))` is rejected: `"$createdAt" is returned in query results but carries no index, so it cannot be filtered on. Select it and filter the results in JavaScript instead.` The error is clear and helpful; the guide is what's wrong. `$expiresAt` is indexed and range queries on it work, which is what we used to slice the network when sampling it.
+
+**Would fix it:** Correct the line in `AGENTS.md` to suggest `$expiresAt`, or a numeric timestamp attribute the app writes itself.
+
 ## Tested and worked as documented
 
 | Surface | What we did | Result |
 |---|---|---|
 | Query limits | `.limit(500)` | Clear error: "limit 500 exceeds the node maximum of 200. Page through the results with the cursor instead." Good message. |
-| Cursor pagination | `page.hasNextPage()` / `page.next()` across all `contract` entities | Worked |
+| Cursor pagination, pinned | `.atBlock(head - 2n)` then `page.hasNextPage()` / `page.next()`, 5 pages of 40 | Worked 8 of 8 walks (unpinned: see item 7) |
 | `createdBy()` | Filtering curated data by the publisher address | Worked |
 | `not(eq())` | Instead of `ne()` | Worked |
 | Browser ESM | `esm.sh/@arkiv-network/sdk@0.8.1?target=es2022&bundle-deps` with `viem` from esm.sh, no bundler | Worked; transports from a separate viem import are accepted |

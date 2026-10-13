@@ -6,19 +6,21 @@
 
 import { str } from "@arkiv-network/sdk/attr"
 import { eq } from "@arkiv-network/sdk/query"
-import { publicClient } from "./arkiv.js"
+import { PIN_LAG, publicClient } from "./arkiv.js"
 import { APP, PUBLISHER, TYPES } from "./schema.js"
 
 const client = publicClient()
 
+// Pinned to one block for the same reason as fetchAll in arkiv.js.
 async function fetchAll(extra, creator) {
+  const block = (await client.getBlockNumber()) - PIN_LAG
   let q = client
     .select({ key: true, attributes: true, payload: true, contentType: true, creator: true, expiresAt: true })
     .where(eq("app", str(APP)), ...extra)
+    .atBlock(block)
     .limit(200)
   if (creator) q = q.createdBy(creator)
   let page = await q.fetch()
-  const block = page.blockNumber
   const out = [...page.entities]
   while (page.hasNextPage()) {
     page = await page.next()
