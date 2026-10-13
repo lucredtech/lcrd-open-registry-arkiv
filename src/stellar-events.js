@@ -64,8 +64,15 @@ export async function protocolDayStats(day, protocolOf, { rpcUrl = DEFAULT_RPC, 
 
   // Estimate the ledger range, with a margin, then trust ledgerClosedAt.
   const ledgersBack = Math.ceil((latestClose - start) / 1000 / SECONDS_PER_LEDGER)
-  const startLedger = latest.sequence - ledgersBack - 300
+  let startLedger = latest.sequence - ledgersBack - 300
   const endLedger = Math.min(latest.sequence, startLedger + Math.ceil(86_400 / SECONDS_PER_LEDGER) + 300)
+
+  // RPC nodes keep about 7 days of events. Clamp to the oldest ledger, then
+  // refuse below if the day itself starts before it: a partial day would
+  // publish numbers that look complete but are not.
+  const { oldestLedger } = await rpc(rpcUrl, "getHealth", {})
+  const clamped = startLedger <= oldestLedger
+  if (clamped) startLedger = oldestLedger + 1
 
   const ids = [...protocolOf.keys()]
   const perProtocol = new Map()
@@ -81,10 +88,15 @@ export async function protocolDayStats(day, protocolOf, { rpcUrl = DEFAULT_RPC, 
     }
     let cursor
     for (;;) {
+      // The RPC rejects a ledger range together with a cursor, so later pages
+      // carry only the cursor and the loop stops once it passes the day.
       const params = cursor
-        ? { endLedger, filters, pagination: { cursor, limit: PAGE_LIMIT } }
+        ? { filters, pagination: { cursor, limit: PAGE_LIMIT } }
         : { startLedger, endLedger, filters, pagination: { limit: PAGE_LIMIT } }
       const page = await rpc(rpcUrl, "getEvents", params)
+      if (clamped && Number(page.oldestLedgerCloseTime) * 1000 > start) {
+        throw new Error(`day ${day} starts before the oldest ledger this RPC keeps (${oldestLedger}); pick a more recent day`)
+      }
       for (const ev of page.events) {
         const at = Date.parse(ev.ledgerClosedAt)
         if (at < start || at >= end || !ev.inSuccessfulContractCall) continue
@@ -108,7 +120,8 @@ export async function protocolDayStats(day, protocolOf, { rpcUrl = DEFAULT_RPC, 
         }
       }
       log(`  contracts ${g + 1}-${g + group.length}: +${page.events.length} events`)
-      if (page.events.length < PAGE_LIMIT) break
+      const last = page.events.at(-1)
+      if (page.events.length < PAGE_LIMIT || last.ledger > endLedger || Date.parse(last.ledgerClosedAt) >= end) break
       cursor = page.cursor
     }
   }

@@ -1,9 +1,9 @@
 import { createPublicClient, createWalletClient, ExpirationTime, jsonToPayload } from "https://esm.sh/@arkiv-network/sdk@0.8.1?target=es2022&bundle-deps"
 import { i32, str, u64 } from "https://esm.sh/@arkiv-network/sdk@0.8.1/attr?target=es2022&bundle-deps"
-import { eq, gte } from "https://esm.sh/@arkiv-network/sdk@0.8.1/query?target=es2022&bundle-deps"
+import { eq } from "https://esm.sh/@arkiv-network/sdk@0.8.1/query?target=es2022&bundle-deps"
 import { tiramisu } from "https://esm.sh/@arkiv-network/sdk@0.8.1/chains?target=es2022&bundle-deps"
 import { custom, http, webSocket } from "https://esm.sh/viem@2.57.5?target=es2022"
-import { APP, GROUPS, LIFETIME_DAYS, PUBLISHER, SCHEMA_VERSION, TYPES, dayNumber, stellarExpertContractUrl } from "../src/schema.js"
+import { APP, GROUPS, LIFETIME_DAYS, PUBLISHER, SCHEMA_VERSION, TYPES, stellarExpertContractUrl } from "../src/schema.js"
 
 const SECONDS_PER_BLOCK = 2
 const EXPLORER = "https://tiramisu.explorer.arkiv.network"
@@ -20,10 +20,13 @@ const sameAddr = (a, b) => a && b && a.toLowerCase() === b.toLowerCase()
 
 const state = { contracts: [], protocols: [], days: [], claims: [], group: "all", search: "", day: null, block: 0n, fresh: new Set() }
 
-async function fetchAll(type, { creator, extra = [] } = {}) {
+// Each Arkiv query costs a visitor's anonymous quota, so the page runs two:
+// everything the publisher wrote for this app (split by type on the client),
+// and every community claim.
+async function fetchAll(extra, creator) {
   let q = reader
     .select({ key: true, attributes: true, payload: true, contentType: true, creator: true, expiresAt: true })
-    .where(eq("app", str(APP)), eq("type", str(type)), ...extra)
+    .where(eq("app", str(APP)), ...extra)
     .limit(200)
   if (creator) q = q.createdBy(creator)
   let page = await q.fetch()
@@ -46,23 +49,19 @@ function toast(msg) {
 
 // ---- loading -------------------------------------------------------------
 
-async function loadRegistry() {
-  const [contracts, protocols] = await Promise.all([
-    fetchAll(TYPES.contract, { creator: PUBLISHER }),
-    fetchAll(TYPES.protocol, { creator: PUBLISHER }),
-  ])
-  state.contracts = contracts
-  state.protocols = protocols
-}
-
-async function loadActivity() {
-  const since = dayNumber(Date.now() - 15 * 86_400_000)
-  state.days = await fetchAll(TYPES.protocolDay, { creator: PUBLISHER, extra: [gte("day", i32(since))] })
+async function loadPublished() {
+  const all = await fetchAll([], PUBLISHER)
+  const of = (type) => all.filter((e) => value(e, "type") === type)
+  state.contracts = of(TYPES.contract)
+  state.protocols = of(TYPES.protocol)
+  state.days = of(TYPES.protocolDay)
 }
 
 async function loadClaims() {
-  state.claims = await fetchAll(TYPES.claim)
+  state.claims = await fetchAll([eq("type", str(TYPES.claim))])
 }
+
+const loadAll = () => Promise.all([loadPublished(), loadClaims()])
 
 // ---- rendering -----------------------------------------------------------
 
@@ -245,7 +244,7 @@ function startLive() {
         const n = burst
         burst = 0
         try {
-          await Promise.all([loadRegistry(), loadActivity(), loadClaims()])
+          await loadAll()
           renderAll()
           toast(`${n} update${n === 1 ? "" : "s"} from the publisher, live from Arkiv`)
         } catch {
@@ -352,7 +351,7 @@ function wire() {
 
 wire()
 renderSnippet()
-Promise.all([loadRegistry(), loadActivity(), loadClaims()])
+loadAll()
   .then(renderAll)
   .catch((err) => {
     console.error(err)

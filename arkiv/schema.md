@@ -89,7 +89,11 @@ Payload: `{ contractId, protocol, category, note }`.
 All queries are in [`src/cli.js`](../src/cli.js) and [`web/app.js`](../web/app.js). Results are paged with the cursor at 200 per page.
 
 ```ts
-// Curated contracts in one group (web: Registry table, CLI: contracts --group)
+// Everything the publisher wrote, in one paged query (web app page load; split by type on the client)
+client.select({ key: true, attributes: true, payload: true, creator: true, expiresAt: true })
+  .where(eq("app", str("lcrd-open-registry"))).createdBy(PUBLISHER).limit(200).fetch()
+
+// Curated contracts in one group (CLI: contracts --group)
 client.select({ key: true, attributes: true, payload: true })
   .where(eq("app", str("lcrd-open-registry")), eq("type", str("contract")), eq("group", str("lending")))
   .createdBy(PUBLISHER).limit(200).fetch()
@@ -97,7 +101,7 @@ client.select({ key: true, attributes: true, payload: true })
 // Is this contract in the registry? (CLI: lookup)
 .where(eq("app", str(APP)), eq("type", str("contract")), eq("contract", str(contractId))).createdBy(PUBLISHER)
 
-// The last 14 days of activity, optionally for one protocol (web: Daily activity, CLI: activity)
+// The last N days of activity, optionally for one protocol (CLI: activity)
 .where(eq("app", str(APP)), eq("type", str("protocol_day")), gte("day", i32(20260929)), eq("protocol", str("blend")))
   .createdBy(PUBLISHER)
 
@@ -109,6 +113,8 @@ client.select({ key: true, attributes: true, payload: true })
 ```
 
 There is no server-side ordering, so the app sorts on the client: by `events` for activity and by `protocol` for the registry.
+
+Each query costs 100 units of a visitor's anonymous quota (about 10,000 per hour per IP on Tiramisu), so the web app loads with two queries, everything from the publisher plus all claims, instead of one per table.
 
 ## Live updates
 
