@@ -21,7 +21,9 @@ What we hit while building LCRD Open Registry on Arkiv, and what we tested that 
 
 **Cost of a query, measured:** every `arkiv_query` we sent reported `arkiv-cost: 100`, including one the node rejected for an invalid option. With `ratelimit: limit=10000` and a reset of about an hour, an anonymous visitor gets about 100 queries an hour. That is enough for a page, but not if each table runs its own query and live updates trigger reloads. We restructured the web app to load with two queries.
 
-**Workaround:** `http(url, { retryCount: 0, timeout: 30_000 })` in [`src/arkiv.js`](../src/arkiv.js), so a 429 fails at once with `Status: 429`, and an API key from the Hub for the publisher.
+**What we observed about the window:** the budget is per network. While our office network was limited, the same page on a phone on another network read Arkiv live. Once limited, the reset did not simply count down: we saw `reset=755` at about 21:07 London time and `reset=2793` at about 22:36, while a watcher was still sending one query every 90 seconds and an open page was reloading on entity events. Rejected requests seem to keep the window open, so a page that keeps retrying stays locked out. That is why ours now stops reading after the first 429.
+
+**Workaround:** `http(url, { retryCount: 0, timeout: 30_000 })` in [`src/arkiv.js`](../src/arkiv.js) and [`web/app.js`](../web/app.js), so a 429 fails at once with `Status: 429`; an API key from the Hub for the publisher; and a `snapshot.json` the daily workflow reads from Arkiv with that key, which the page shows (clearly labelled) when a visitor's network is limited.
 
 **Would fix it:** Have the SDK's default transport not retry on `ANON_COST_LIMITED` (or cap the `Retry-After` it will wait for), and surface the body's message as a typed error. A sentence on the Tiramisu page about the anonymous budget size would help too, and `Arkiv-Quota-Used-Percent` is already exposed, so the SDK could warn as it approaches 100%.
 
