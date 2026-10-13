@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LCRD Open Registry</title>
+  <meta name="description" content="An open registry of Stellar DeFi protocols, contracts and daily activity, stored on Arkiv and readable without any LCRD server.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%232f5bea'/><text x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='Arial' font-weight='700'>L</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-row">
+      <div class="brand"><span class="logo">L</span> LCRD Open Registry</div>
+      <div class="live" id="live" title="Arkiv entity events over WebSocket"><span class="dot"></span><span id="live-text">connecting…</span></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Every Stellar DeFi contract, and what happened on it yesterday.</h1>
+      <p class="lede">A public registry of Soroban protocols, their contracts and their daily activity. This page reads it straight from <a href="https://arkiv.network" target="_blank" rel="noopener">Arkiv</a>, the Web3 database. There is no LCRD server behind it: if we disappear, the data and this page keep working.</p>
+      <div class="stats" id="stats">
+        <div class="stat"><span class="n" id="s-protocols">–</span><span class="l">protocols</span></div>
+        <div class="stat"><span class="n" id="s-contracts">–</span><span class="l">contracts</span></div>
+        <div class="stat"><span class="n" id="s-events">–</span><span class="l">events on <span id="s-day">–</span></span></div>
+        <div class="stat"><span class="n" id="s-block">–</span><span class="l">Arkiv block read</span></div>
+      </div>
+      <p class="publisher">Curated entries are the ones whose on-chain creator is <a id="publisher" target="_blank" rel="noopener"></a>. Anyone can check that on the <a href="https://tiramisu.explorer.arkiv.network" target="_blank" rel="noopener">explorer</a>; it is not a field anyone can write.</p>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Daily activity</h2>
+        <select id="day-select" aria-label="Day"></select>
+      </div>
+      <p class="hint">Computed from public Stellar RPC <code>getEvents</code> for every registered contract. Wallets is a count only; no address is stored on Arkiv.</p>
+      <div class="table-wrap"><table id="activity">
+        <thead><tr><th>Protocol</th><th class="num">Events</th><th class="num">Wallets</th><th class="num">Active contracts</th><th>Top actions</th><th>Last 14 days</th></tr></thead>
+        <tbody><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+      </table></div>
+    </section>
+
+    <section>
+      <div class="section-head">
+        <h2>Registry</h2>
+        <input id="search" type="search" placeholder="Search contract, protocol, asset" aria-label="Search the registry">
+      </div>
+      <div class="chips" id="groups"></div>
+      <div class="table-wrap"><table id="contracts">
+        <thead><tr><th>Contract</th><th>Protocol</th><th>Category</th><th>Asset</th><th>Arkiv entity</th></tr></thead>
+        <tbody><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+      </table></div>
+    </section>
+
+    <section>
+      <div class="section-head"><h2>Community submissions</h2></div>
+      <p class="hint">Know a contract we missed? Submit it from your own wallet. It is stored on Arkiv under your address for 7 days while it waits for review, and shown here as unverified: its creator is you, not the publisher.</p>
+      <div class="claims-grid">
+        <form id="claim-form" class="card">
+          <label>Contract ID<input name="contract" required pattern="C[A-Z2-7]{55}" placeholder="C…" autocomplete="off"></label>
+          <label>Protocol<input name="protocol" required pattern="[a-z0-9_]{2,40}" placeholder="e.g. blend"></label>
+          <label>Category
+            <select name="category" required></select>
+          </label>
+          <label>Source or note<input name="note" maxlength="280" placeholder="Link to docs or a deploy transaction"></label>
+          <button type="submit" id="claim-btn">Connect wallet and submit</button>
+          <p class="form-msg" id="claim-msg"></p>
+        </form>
+        <div class="table-wrap"><table id="claims">
+          <thead><tr><th>Contract</th><th>Protocol</th><th>Category</th><th>Submitted by</th><th>Status</th></tr></thead>
+          <tbody><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Query it yourself</h2>
+      <p class="hint">The same query this page runs, with the Arkiv TypeScript SDK. No key, no LCRD API.</p>
+      <pre><code id="snippet"></code></pre>
+    </section>
+  </main>
+
+  <footer class="wrap foot">
+    <span>MIT licensed · <a href="https://github.com/lucredtech/lcrd-open-registry" target="_blank" rel="noopener">Source</a> · <a href="https://github.com/lucredtech/lcrd-open-registry/blob/main/arkiv/schema.md" target="_blank" rel="noopener">Data contract</a></span>
+    <span>Arkiv Tiramisu testnet · chain 7738577</span>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

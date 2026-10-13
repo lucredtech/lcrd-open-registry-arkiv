@@ -1,0 +1,24 @@
+{
+  "name": "lcrd-open-registry",
+  "version": "1.0.0",
+  "description": "An open registry of Stellar DeFi protocols, contracts and daily activity, published to Arkiv.",
+  "scripts": {
+    "publish:registry": "node --env-file=.env src/publish-registry.js",
+    "publish:stats": "node --env-file=.env src/publish-stats.js",
+    "registry": "node src/cli.js"
+  },
+  "author": "Lucred",
+  "license": "MIT",
+  "dependencies": {
+    "@arkiv-network/sdk": "^0.8.1",
+    "viem": "^2.57.5"
+  },
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "lcrd-registry": "src/cli.js"
+  }
+}

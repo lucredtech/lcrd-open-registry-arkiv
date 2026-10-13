@@ -1,0 +1,386 @@
+[
+  {
+    "contractId": "CDSYOAVXFY7SM5S64IZPPPYB4GVGGLMQVFREPSQQEZVIWXX5R23G4QSU",
+    "protocol": "blend",
+    "category": "lending_pool_factory"
+  },
+  {
+    "contractId": "CAQQR5SWBXKIGZKPBZDH3KM5GQ5GUTPKB7JAFCINLZBC5WXPJKRG3IM7",
+    "protocol": "blend",
+    "category": "lending_backstop"
+  },
+  {
+    "contractId": "CDMAVJPFXPADND3YRL4BSM3AKZWCTFMX27GLLXCML3PD62HEQS5FPVAI",
+    "protocol": "blend",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CADR6Q2UOCDJAGXMAB2E6SRT35STLZ2IGLZUCXJQG7TC2LNKCU5RTQVY",
+    "protocol": "blend",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CALRF5I2OCJCU577R6MZBCY5IIXNMAAG6PNMN7GUKEYIXBJCJN2FJRVI",
+    "protocol": "blend",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CBYOBT7ZCCLQCBUYYIABZLSEGDPEUWXCUXQTZYOG3YBDR7U357D5ZIRF",
+    "protocol": "blend",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CAE7QVOMBLZ53CDRGK3UNRRHG5EZ5NQA7HHTFASEMYBWHG6MDFZTYHXC",
+    "protocol": "blend",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CB4OFHAY2TAEYUVPOJS36S657C6NYMSIFUNCCA5AHYT46Y5XUID3O2ED",
+    "protocol": "blend",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CCCCIQSDILITHMM7PBSLVDT5MISSY7R26MNZXCX4H7J5JQ5FPIYOGYFS",
+    "protocol": "blend",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CBNR7PYFY775UG7W37B4OJG2OBBUKLFW6VIBHFDKKLR2HECPRMRZMDK3",
+    "protocol": "blend",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CAJJZSGMMM3PD7N33TAPHGBUGTB43OC73HVIK2L2G6BNGGGYOSSYBXBD",
+    "protocol": "blend",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CAIYBZSBI6XXI3W7EDXDRWLUBK3RCAPHTK4DNX74DZGWE53KYWBHE236",
+    "protocol": "blend",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CC4HHXPKR3FIXUQEC53MAK2IVWD6APAEBBXP5XCIW5FISN6PQOAC6UXG",
+    "protocol": "blend",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CDZVHCO7LDUJZSME3PJPJXAKT7F6W5IXSOXTJ2QEK3Y2X2CDUREBUMUY",
+    "protocol": "blend",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CBQDHNBFBZYE4MKPWBSJOPIYLW4SFSXAXUTSXJN76GNKYVYPCKWC6QUK",
+    "protocol": "aquarius",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CA54LVHMAY7HGLMVPN4W72XJB4OGKVZBZX26FWN6JD4P3HJFWQUQEHJO",
+    "protocol": "stellar_defi_hub",
+    "category": "yield_savings",
+    "assetCode": "XLM"
+  },
+  {
+    "contractId": "CAHEWHOPPDBQYFMAOLDOXXGUX2BCR7EXP4CWYCRY3NEAJB35YPZMMJFF",
+    "protocol": "stellar_defi_hub",
+    "category": "yield_savings",
+    "assetCode": "USDC"
+  },
+  {
+    "contractId": "CAQRAXBU6G4AAX4BZ7R4WLB62TSVAQFS5ZXJDVXRLAU2NZ2ZTGU5QOYB",
+    "protocol": "stellar_defi_hub",
+    "category": "yield_savings",
+    "assetCode": "PYUSD"
+  },
+  {
+    "contractId": "CCL3WITWFFXIHV2I52ECV5DPIEOFSTU3PBPR53ILPLF2IP5KHECXRUTY",
+    "protocol": "gami_upshift",
+    "category": "yield_savings",
+    "assetCode": "USDC"
+  },
+  {
+    "contractId": "CC6TRAPQD3NK7THUKWPV5SL2JHKQGNXZVB6S6MVYFSLRWAKEFUWZKZ7J",
+    "protocol": "gami_upshift",
+    "category": "yield_savings",
+    "assetCode": "XLM"
+  },
+  {
+    "contractId": "CD3KRKGDRVWPXVB3VXLUMQKMX6XZ6Q2H334IVZD4XXNAMKSRVQL5GLYF",
+    "protocol": "sushi_stellar",
+    "category": "amm_factory"
+  },
+  {
+    "contractId": "CA3M5DXSSDUSTAXIPH5GGTS55SIZJKUHKQEOJVZ57GMZKEQCGZBTY7ZV",
+    "protocol": "templar",
+    "category": "yield_savings"
+  },
+  {
+    "contractId": "CAADAYJOZF5HXPVZXBXA3PLCU7OSRW34OKVXG2676KAGZVZBI6EYQ73L",
+    "protocol": "huma_finance",
+    "category": "rwa_trade_finance"
+  },
+  {
+    "contractId": "CBHCRSVX3ZZ7EGTSYMKPEFGZNWRVCSESQR3UABET4MIW52N4EVU6BIZX",
+    "protocol": "phoenix_defi_hub",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CBCZGGNOEUZG4CAAE7TGTQQHETZMKUT4OIPFHHPKEUX46U4KXBBZ3GLH",
+    "protocol": "phoenix_defi_hub",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CBISULYO5ZGS32WTNCBMEFCNKNSLFXCQ4Z3XHVDP4X4FLPSEALGSY3PS",
+    "protocol": "phoenix_defi_hub",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CDQLKNH3725BUP4HPKQKMM7OO62FDVXVTO7RCYPID527MZHJG2F3QBJW",
+    "protocol": "phoenix_defi_hub",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CBW5G5SO5SDYUGQVU7RMZ2KJ34POM3AMODOBIV2RQYG4KJDUUBVC3P2T",
+    "protocol": "phoenix_defi_hub",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CBENABXP6C4C7WG6KB7JQOTDS5GIIXF3IX3PIYNZFCDZDWUHITO2HZ4S",
+    "protocol": "phoenix_defi_hub",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CCPPPTDWJIWXQUQ2CN64S5JYQ7GYWVZIT7YWUUTH75HKIZX53Z2CE3XI",
+    "protocol": "phoenix_defi_hub",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CAF3UJ45ZQJP6USFUIMVMGOUETUTXEC35R2247VJYIVQBGKTKBZKNBJ3",
+    "protocol": "phoenix_defi_hub",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CBRGNWGAC25CPLMOAMR7WBPOF5QTFA5RYXQH4DEJ4K65G2QFLTLMW7RO",
+    "protocol": "phoenix_defi_hub",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CDEQYRWFU3IHPRR6H6VOQRUU3JFS6DTUYUL4YAQSD3ALB5IPBTEOZUFM",
+    "protocol": "phoenix_defi_hub",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CCP653KENMYCAYQ3PHJDT6PITMG4XYKVWV3OEDDCOAOS6Z4GOMXGYH3Z",
+    "protocol": "phoenix_defi_hub",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CCIWIW6ESCCCFMEI5QOSUHDKTMBEMRJ22F7GPYNRKM2UI2FH6WYUKOUU",
+    "protocol": "phoenix_defi_hub",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CBUS3GWDBJYOLYC7PA3JCFQPPHXCX7U3TBHQSVCSTSNG6GH6WU4L74UE",
+    "protocol": "phoenix_defi_hub",
+    "category": "amm_liquidity"
+  },
+  {
+    "contractId": "CA4HEQTL2WPEUYKYKCDOHCDNIV4QHNJ7EL4J4NQ6VADP7SYHVRYZ7AW2",
+    "protocol": "soroswap",
+    "category": "amm_factory"
+  },
+  {
+    "contractId": "CAG5LRYQ5JVEUI5TEID72EYOVX44TTUJT5BQR2J6J77FH65PCCFAJDDH",
+    "protocol": "soroswap",
+    "category": "amm_router"
+  },
+  {
+    "contractId": "CDVVH3KWXWLVUO5OLLBBZSCZICV46PDKYA2G2HYBTWH4A6EJWTBRIXRK",
+    "protocol": "defa_invoicemate",
+    "category": "rwa_trade_finance"
+  },
+  {
+    "contractId": "CBU4Y7CJFOUZZE3QBOXTKM54UTUYW3SDJWTNMDGJBNCR5HS5UCEKV3BE",
+    "protocol": "peridot",
+    "category": "lending_debt",
+    "assetCode": "XLM"
+  },
+  {
+    "contractId": "CBVUJJIJTRJNOORPPCVH72DP7YDCOMDHI6WYKP3WOFVEPSCVP3TBXHIN",
+    "protocol": "peridot",
+    "category": "lending_debt",
+    "assetCode": "USDC"
+  },
+  {
+    "contractId": "CD3WN3PLW63HFZXE56OTRLMBV46WG54TFPGRL4RDQ43HQTTWVB4RPO3G",
+    "protocol": "peridot",
+    "category": "lending_debt",
+    "assetCode": "EURC"
+  },
+  {
+    "contractId": "CBXRNDQMAJFG4VUKMKFEMFS75UUXE2SPSNV4LEEFCSNBCN66PYRWBKXO",
+    "protocol": "xoxno_lending",
+    "category": "lending_debt"
+  },
+  {
+    "contractId": "CB3YA656OYIHU57657I5KGSBRHE5I3OZU4VFC22PYAOANFZHEWNYGAGP",
+    "protocol": "ondo_usdy",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CCDSDPD7FXB74PFB2SYCHGQRWLXQRYRTQSPCVSRJ7FAOLOUGWEYAXQ7A",
+    "protocol": "franklin_templeton_benji",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CARUUX2FZNPH6DGJOEUFSIUQWYHNL5AVDV7PMVSHWL7OBYIBFC76F4TO",
+    "protocol": "spiko",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CBGV2QFQBBGEQRUKUMCPO3SZOHDDYO6SCP5CH6TW7EALKVHCXTMWDDOF",
+    "protocol": "spiko",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CDT3KU6TQZNOHKNOHNAFFDQZDURVC3MSTL4ML7TUTZGNOPBZCLABP4FR",
+    "protocol": "spiko",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CDS2GCAQTNQINSCJUJIVBJXILKBWP5PU7LOBGHMP3X47QCQBFKPMTCNT",
+    "protocol": "spiko",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CDWOB6T7SVSMMQN5V3P2OPTBAXOP7DAZHGVW3PYTZIKHVFKN6TBSXR6A",
+    "protocol": "spiko",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CDGSC6BA4TCAOVSFQCUEHDMOIIHYYVNYBT6YEARS4MX3ITAHUINVGQHX",
+    "protocol": "spiko",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CBOOCGZSVRSZFRE4U2NWR2B4RXYVJWRCBTGOUD2JPI2TDJPWMTJX7FZP",
+    "protocol": "spiko",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CAGYRRKPFSWKM6SJOE4QAAVYMOSHMDS5WOQ4T5A2E6XNCU7LZZKUNQKP",
+    "protocol": "spiko",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CAJD2IBSP7VO2VYJQUYJSOGPJINTUYV7MQITINXVPTIH3CCLCUENNMW4",
+    "protocol": "spiko",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CCDI4CNUSRI2UYQ2F44VVUB47WNYQL552SQLL5KT6JQHDTTOS4PAWQ5G",
+    "protocol": "wisdomtree",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CCZ6ZWEO3KEA6PHTK56C6MEOHPVPBWZ7C3YUXR6SMBROPIEVXWICRY2L",
+    "protocol": "wisdomtree",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CATVJYIVZMI3FFCFLNNBUSR7UGLIOCMJRZJ5YZU4LOVWKPTC4VSQ2IQG",
+    "protocol": "wisdomtree",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CBZ63YIHU3OOSP2JW3CHMXJ67T3Z3IU3NRSSJ4M53GFDIRR4YXKCEE36",
+    "protocol": "wisdomtree",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CC5XKPSET6QVWPL7EFUA7KXO6XLWPWXJKAGJC24MXW7EYVXQLUBV4OM5",
+    "protocol": "wisdomtree",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CACJVBOTJ22N224NILIACP6FM75XE5JXIV2PGWYIXJ5R3GW3YD5VVFVS",
+    "protocol": "wisdomtree",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CAIDESHFY4QU4I7FNNROV2ADPFZCWMB3VDMLBT5DZYEKWGOLT4ODNS6I",
+    "protocol": "wisdomtree",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CBVCBEMVSVH73W7HZZHEMFYSYNF2ALRUFNSATHF2WXENW33BGF5FSTFR",
+    "protocol": "wisdomtree",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CBBIDGSNGX43W6AEN32UFSLRTSM64MLNCXAHFCJV6PQYR5E6LV4IHPSS",
+    "protocol": "wisdomtree",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CAL6ER2TI6CTRAY6BFXWNWA7WTYXUXTQCHUBCIBU5O6KM3HJFG6Z6VXV",
+    "protocol": "etherfuse",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CCHXOH2JGL6KBO5VOHR6WD4ZQXI6CFMJ5F65XVSZ6P47Y7KVZSQIPN6J",
+    "protocol": "etherfuse",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CD6M4R2322BYCY2LNWM74PEBQAQ63SA3DUJLI3L4225U4ZVCLMSCBCIS",
+    "protocol": "etherfuse",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CBLV4ATSIWU67CFSQU2NVRKINQIKUZ2ODSZBUJTJ43VJVRSBTZYOPNUR",
+    "protocol": "etherfuse",
+    "category": "rwa_treasury"
+  },
+  {
+    "contractId": "CDDDLSQAR6EVIBFU6KMHA6WLIZJ5PDPXKJCEADD6YJ3HJ3S775XHVEE4",
+    "protocol": "untangled_rwa",
+    "category": "rwa_credit"
+  },
+  {
+    "contractId": "CD4LFLCBS6LOLYTRRXICJEFZ3A3RTSFT2SJV5QQXKFJGMGNWQQ4ALMNV",
+    "protocol": "untangled_rwa",
+    "category": "rwa_credit"
+  },
+  {
+    "contractId": "CADEVOLEC3EX47EF6YBXVJ7DE6W7Z67BN55I5XQWX7GGSFHHOLHO2RQC",
+    "protocol": "untangled_rwa",
+    "category": "rwa_credit"
+  },
+  {
+    "contractId": "CBNAVFEOOVCRUELW2RTQU3KY2NJUF7GWBZI2UYYSZFJJ22LCR2VORS3B",
+    "protocol": "untangled_rwa",
+    "category": "rwa_credit"
+  },
+  {
+    "contractId": "CBP76I2FRMUKYKIYYBKN3DH7TSWMFAJF2WTDC7Q2OHQFBIVWP7CAAI5Q",
+    "protocol": "alula",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CCL2KTHYOVMNNOFDT7PEAHACUBYVFLRH2LYWVQB6IPMHHAVUBC7ZUUC2",
+    "protocol": "slender",
+    "category": "lending_pool"
+  },
+  {
+    "contractId": "CD5LOWLRQXTG5ZTNU4NA4NNLGGKNRJNRX45PVINVY7VCTOFQAAOYLTF5",
+    "protocol": "normal",
+    "category": "wrapped_asset"
+  },
+  {
+    "contractId": "CD6G3UTDV4XPDMVNYTPQ6UCL7FWSYG5LXYAZXBDDSKY5YOQ6HLDBPYRY",
+    "protocol": "fundable",
+    "category": "mass_distribution",
+    "assetCode": "XLM"
+  }
+]
