@@ -276,6 +276,9 @@ function startLive() {
         try {
           await loadAll()
           renderAll()
+          $("notice").hidden = true
+          $("live").classList.add("on")
+          $("live-text").textContent = "live from Arkiv"
           toast(`${n} update${n === 1 ? "" : "s"} from the publisher, live from Arkiv`)
         } catch {
           toast("Live update received, but Arkiv is rate-limiting reads right now.")
@@ -389,6 +392,8 @@ loadAll()
     try {
       const snap = await loadSnapshot()
       renderAll()
+      $("live").classList.remove("on")
+      $("live-text").textContent = "snapshot"
       const when = new Date(snap.takenAt).toLocaleString("en", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" })
       showNotice(
         `${limited ? "Arkiv's public RPC is rate-limiting anonymous reads from your network right now" : "Could not read Arkiv directly right now"}, ` +
