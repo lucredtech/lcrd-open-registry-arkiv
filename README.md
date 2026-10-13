@@ -37,6 +37,11 @@ Stellar RPC getEvents ──► publish-stats ────► Arkiv: protocol_da
 | `src/publish-stats.js` | Writes that day as `protocol_day` entities |
 | `src/cli.js` | Read-only CLI: `protocols`, `contracts`, `lookup`, `activity`, `claims` |
 | `web/` | Static web app: registry, daily activity, community submissions. No build step |
+| `src/snapshot.js` | Reads everything this app has on Arkiv into `snapshot.json`, the page's fallback (below) |
+
+## When Arkiv rate-limits reads
+
+The page reads Arkiv directly from the visitor's browser, with no key. Tiramisu's public RPC gives anonymous readers a small query budget, and when a network runs out the RPC answers `429` for up to an hour. The page then falls back to `snapshot.json`, which the daily workflow reads from Arkiv with an API key and deploys next to the page. The page says so, with the snapshot's block number and time, and every entity key and creator in it can be checked on the explorer. The CLI always reads live.
 
 ## Run it
 

@@ -63,6 +63,36 @@ async function loadClaims() {
 
 const loadAll = () => Promise.all([loadPublished(), loadClaims()])
 
+// The fallback when this visitor's anonymous Arkiv reads are rate-limited:
+// a snapshot the daily job reads from Arkiv with an API key and publishes
+// next to the page. Shaped like live query results so rendering is shared.
+async function loadSnapshot() {
+  const res = await fetch("../snapshot.json", { cache: "no-cache" })
+  if (!res.ok) throw new Error(`snapshot: HTTP ${res.status}`)
+  const snap = await res.json()
+  const typed = (a) => ({ type: a.type, value: a.type === "i32" ? Number(a.value) : ["u64", "u256"].includes(a.type) ? BigInt(a.value) : a.value })
+  const all = snap.entities.map((e) => ({
+    key: e.key,
+    creator: e.creator,
+    expiresAt: BigInt(e.expiresAt),
+    attributes: Object.fromEntries(Object.entries(e.attributes).map(([k, a]) => [k, typed(a)])),
+    toJson: () => e.payload,
+  }))
+  const curated = all.filter((e) => sameAddr(e.creator, PUBLISHER))
+  const of = (type) => curated.filter((e) => value(e, "type") === type)
+  state.contracts = of(TYPES.contract)
+  state.protocols = of(TYPES.protocol)
+  state.days = of(TYPES.protocolDay)
+  state.claims = all.filter((e) => value(e, "type") === TYPES.claim)
+  state.block = BigInt(snap.block)
+  return snap
+}
+
+function showNotice(html) {
+  $("notice").innerHTML = html
+  $("notice").hidden = false
+}
+
 // ---- rendering -----------------------------------------------------------
 
 function renderStats() {
@@ -353,15 +383,27 @@ wire()
 renderSnippet()
 loadAll()
   .then(renderAll)
-  .catch((err) => {
+  .catch(async (err) => {
     console.error(err)
     const limited = String(err?.status ?? err?.cause?.status ?? err?.message).includes("429")
-    const msg = limited
-      ? "The public Arkiv RPC has rate-limited this network for a few minutes. Please try again shortly."
-      : "Could not reach Arkiv. Please reload in a moment."
-    for (const id of ["activity", "contracts", "claims"]) {
-      const cols = $(id).querySelectorAll("thead th").length
-      $(id).querySelector("tbody").innerHTML = `<tr><td colspan="${cols}" class="empty">${msg}</td></tr>`
+    try {
+      const snap = await loadSnapshot()
+      renderAll()
+      const when = new Date(snap.takenAt).toLocaleString("en", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" })
+      showNotice(
+        `${limited ? "Arkiv's public RPC is rate-limiting anonymous reads from your network right now" : "Could not read Arkiv directly right now"}, ` +
+          `so this is the <a href="../snapshot.json" target="_blank" rel="noopener">snapshot</a> read from Arkiv at block ${fmt(snap.block)} (${when} UTC). ` +
+          `Every entity key and creator here can be checked on the <a href="${EXPLORER}/address/${PUBLISHER}" target="_blank" rel="noopener">explorer</a>. Reload later for live data.`,
+      )
+    } catch (snapErr) {
+      console.error(snapErr)
+      const msg = limited
+        ? "The public Arkiv RPC has rate-limited this network for a few minutes. Please try again shortly."
+        : "Could not reach Arkiv. Please reload in a moment."
+      for (const id of ["activity", "contracts", "claims"]) {
+        const cols = $(id).querySelectorAll("thead th").length
+        $(id).querySelector("tbody").innerHTML = `<tr><td colspan="${cols}" class="empty">${msg}</td></tr>`
+      }
     }
   })
 startLive()

@@ -1,24 +1,36 @@
-name: Daily publish
+name: Publish and deploy
 
 # Every morning (UTC): publish yesterday's per-protocol activity from public
-# Stellar RPC, then renew the registry's lease on Arkiv.
+# Stellar RPC, renew the registry's lease on Arkiv, then deploy the site with
+# a fresh snapshot.json (the page's fallback when anonymous Arkiv reads are
+# rate-limited). A push to main redeploys the site without publishing.
 on:
   schedule:
     - cron: "30 2 * * *"
+  push:
+    branches: [main]
   workflow_dispatch:
     inputs:
       day:
         description: "UTC day to publish, YYYYMMDD (default: yesterday)"
         required: false
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 concurrency:
-  group: daily-publish
+  group: publish
   cancel-in-progress: false
 
 jobs:
-  publish:
+  publish-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     env:
       PUBLISHER_PRIVATE_KEY: ${{ secrets.PUBLISHER_PRIVATE_KEY }}
       ARKIV_RPC_URL: ${{ secrets.ARKIV_RPC_URL }}
@@ -30,6 +42,18 @@ jobs:
           cache: npm
       - run: npm ci
       - name: Publish daily stats
+        if: github.event_name != 'push'
         run: node src/publish-stats.js ${{ inputs.day && format('--day {0}', inputs.day) || '' }}
       - name: Renew registry
+        if: github.event_name != 'push'
         run: node src/publish-registry.js
+      - name: Build site
+        run: |
+          mkdir _site
+          rsync -a --exclude node_modules --exclude .git --exclude .github --exclude _site ./ _site/
+          node src/snapshot.js > _site/snapshot.json
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4
