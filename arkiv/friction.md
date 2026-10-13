@@ -19,6 +19,8 @@ What we hit while building LCRD Open Registry on Arkiv, and what we tested that 
 2. Run any `client.select(...).fetch()` with `createPublicClient({ chain: tiramisu, transport: http() })`. It hangs.
 3. `curl -i -X POST -H 'content-type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"arkiv_query","params":["app = \"x\"",{}]}' https://rpc.tiramisu.db-chain.testnet.arkiv.network` shows the 429 and the message.
 
+**Cost of a query, measured:** every `arkiv_query` we sent reported `arkiv-cost: 100`, including one the node rejected for an invalid option. With `ratelimit: limit=10000` and a reset of about an hour, an anonymous visitor gets about 100 queries an hour. That is enough for a page, but not if each table runs its own query and live updates trigger reloads. We restructured the web app to load with two queries.
+
 **Workaround:** `http(url, { retryCount: 0, timeout: 30_000 })` in [`src/arkiv.js`](../src/arkiv.js), so a 429 fails at once with `Status: 429`, and an API key from the Hub for the publisher.
 
 **Would fix it:** Have the SDK's default transport not retry on `ANON_COST_LIMITED` (or cap the `Retry-After` it will wait for), and surface the body's message as a typed error. A sentence on the Tiramisu page about the anonymous budget size would help too, and `Arkiv-Quota-Used-Percent` is already exposed, so the SDK could warn as it approaches 100%.
