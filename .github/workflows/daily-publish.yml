@@ -1,0 +1,35 @@
+name: Daily publish
+
+# Every morning (UTC): publish yesterday's per-protocol activity from public
+# Stellar RPC, then renew the registry's lease on Arkiv.
+on:
+  schedule:
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+    inputs:
+      day:
+        description: "UTC day to publish, YYYYMMDD (default: yesterday)"
+        required: false
+
+concurrency:
+  group: daily-publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      PUBLISHER_PRIVATE_KEY: ${{ secrets.PUBLISHER_PRIVATE_KEY }}
+      ARKIV_RPC_URL: ${{ secrets.ARKIV_RPC_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Publish daily stats
+        run: node src/publish-stats.js ${{ inputs.day && format('--day {0}', inputs.day) || '' }}
+      - name: Renew registry
+        run: node src/publish-registry.js

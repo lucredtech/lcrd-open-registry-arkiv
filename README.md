@@ -4,7 +4,7 @@ An open registry of Stellar DeFi protocols, their Soroban contracts and their da
 
 Anyone can read it, query it and build on it without asking us and without an LCRD server.
 
-- **Live app:** _link added at deploy_
+- **Live app:** https://lucredtech.github.io/lcrd-open-registry-arkiv/
 - **Data contract:** [`arkiv/schema.md`](arkiv/schema.md)
 - **Friction report:** [`arkiv/friction.md`](arkiv/friction.md)
 - **Publisher wallet:** `0xFD52Dc5DBa1Aa937E90EE87AcD99a7e433AAa9B7` on Tiramisu ([explorer](https://tiramisu.explorer.arkiv.network/address/0xFD52Dc5DBa1Aa937E90EE87AcD99a7e433AAa9B7))
