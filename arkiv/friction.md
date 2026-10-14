@@ -147,4 +147,4 @@ for (let i = 0; i < 6; i++) {
 | `createdBy()` | Filtering curated data by the publisher address | Worked |
 | `not(eq())` | Instead of `ne()` | Worked |
 | Browser ESM | `esm.sh/@arkiv-network/sdk@0.8.1?target=es2022&bundle-deps` with `viem` from esm.sh, no bundler | Worked; transports from a separate viem import are accepted |
-| WebSocket events | `watchEntityEvents` over `webSocket()` in the browser | Connected; see item 4 |
+| WebSocket events | `watchEntityEvents` over `webSocket()` in the browser, while the publisher renewed 97 leases | The page received the publisher's `ExpiryExtended` events and refreshed within seconds (in Node the first event arrived about 11 s after the run started; each batch takes a few seconds to land). See item 5 |
