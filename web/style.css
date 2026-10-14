@@ -49,7 +49,7 @@ code, pre { font-family: var(--mono); font-size: 13px; }
 .top { border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; z-index: 5; }
 .top-row { display: flex; align-items: center; justify-content: space-between; height: 56px; }
 .brand { font-weight: 650; display: flex; align-items: center; gap: 10px; }
-.logo { width: 26px; height: 26px; border-radius: 7px; background: var(--accent); color: #fff; display: grid; place-items: center; font-size: 14px; }
+.logo { width: 26px; height: 26px; display: block; }
 .live { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 13px; }
 .live .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
 .live.on .dot { background: var(--ok); box-shadow: 0 0 0 0 var(--ok); animation: pulse 2s infinite; }
