@@ -6,7 +6,10 @@ name: Publish and deploy
 # rate-limited). A push to main redeploys the site without publishing.
 on:
   schedule:
+    # Two slots: GitHub can delay or skip scheduled runs, and a rerun is
+    # harmless (it patches the same day and renews the same leases).
     - cron: "30 2 * * *"
+    - cron: "17 5 * * *"
   push:
     branches: [main]
   workflow_dispatch:
